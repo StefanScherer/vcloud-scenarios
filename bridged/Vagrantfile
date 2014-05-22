@@ -1,0 +1,36 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+server_box = "ubuntu1204"
+
+Vagrant.configure("2") do |config|
+
+  if Vagrant.has_plugin?("vagrant-vcloud")
+    config.vm.provider :vcloud do |vcloud|
+      vcloud.vapp_prefix = "bridged"
+      vcloud.network_bridge = true
+    end
+    if Vagrant.has_plugin?("vagrant-proxyconf")
+      config.vm.provider :vcloud do |cloud, override|
+        override.proxy.enabled = false
+      end
+    end
+    config.vm.provider :vcloud do |cloud, override|
+      override.vm.usable_port_range = 2200..2999
+    end
+  end
+
+  config.vm.define :"tst" do |tst|
+    tst.vm.box = "ubuntu1204"
+    tst.vm.hostname = "tst"
+    tst.vm.provision "shell", path: "scripts/provision.sh"
+  end
+
+  config.vm.define :"tst2" do |tst2|
+    tst2.vm.box = server_box
+    tst2.vm.hostname = "tst2"
+    tst2.vm.provision "shell", path: "scripts/provision.sh"
+  end
+
+end
+
