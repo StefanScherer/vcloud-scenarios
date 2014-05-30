@@ -4,9 +4,8 @@ and Vagrant 1.6.2. The new winrm communicator is used for provisioning.
 
 ## Prerequisites
 
-* Vagrant 1.6.2
-* Patch line 66 in Vagrant plugins/commands/rdp/command.rb to `if 1`. See [Vagrant Issue #3832](https://github.com/mitchellh/vagrant/issues/3832)
-* vagrant-vcloud 0.3.1 + [PR #61](https://github.com/frapposelli/vagrant-vcloud/pull/61)
+* Vagrant 1.6.3
+* vagrant-vcloud 0.3.1 + [PR #61](https://github.com/frapposelli/vagrant-vcloud/pull/61), or vagrant-vcloud 0.4.0
 * a global Vagrantfile with your vCloud connection data
 
 ## Known Issues
