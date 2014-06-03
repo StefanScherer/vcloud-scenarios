@@ -21,7 +21,7 @@ vagrant box add --name windows_7 https://github.com/StefanScherer/vcloud-scenari
 vagrant up --provider=vcloud
 ```
 
-After provisioning the Remote Desktop will be enabled. You then can also connection with RDP
+You can also connection with RDP
 
 ```bash
 vagrant rdp tst
