@@ -10,7 +10,8 @@ and Vagrant 1.6.3. The new winrm communicator is used for provisioning.
 
 ## Known Issues
 
-* vagrant rdp hangs on a Windows host. The intermediate process powershell.exe does not exit, you have to kill it manually. See [Vagrant issue 3837](https://github.com/mitchellh/vagrant/issues/3837)
+* vagrant rdp hangs on a Windows host in vagrant 1.6.2. The intermediate process powershell.exe does not exit, you have to kill it manually. See [Vagrant issue 3837](https://github.com/mitchellh/vagrant/issues/3837)
+* vagrant rdp crashes on a Windows host in vagrant 1.6.3. See [Vagrant issue 3962](https://github.com/mitchellh/vagrant/issues/3962)
 
 ## Installation
 
@@ -25,7 +26,7 @@ vagrant box add --name windows_2008_r2 https://github.com/StefanScherer/vcloud-s
 vagrant up --provider=vcloud
 ```
 
-After provisioning the Remote Desktop will be enabled. You then can also connection with RDP
+You can also connection with RDP
 
 ```bash
 vagrant rdp tst
