@@ -13,7 +13,7 @@ and Vagrant 1.6.3. The new winrm communicator is used for provisioning.
 Must have an uploaded box `windows_7` in your vCloud catalog. Append a dummy box with the following command to make vagrant happy.
 
 ```bash
-vagrant box add --name windows_7 https://github.com/StefanScherer/vagrant-scenarios/raw/master/dummy_box/dummy.box
+vagrant box add --name windows_7 https://github.com/StefanScherer/vcloud-scenarios/raw/master/dummy_box/dummy.box
 ```
 
 ## Create the boxes
