@@ -1,0 +1,77 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+
+  if Vagrant.has_plugin?("vagrant-vcloud")
+    config.vm.provider :vcloud do |vcloud|
+      vcloud.vapp_prefix = "win2012r2test"
+      vcloud.ip_subnet = "192.168.33.1/255.255.255.0" # our test subnet with fixed IP adresses for everyone
+      vcloud.ip_dns = ["10.100.20.2", "8.8.8.8"]  # intranet DNS + Google
+    end
+    if Vagrant.has_plugin?("vagrant-proxyconf")
+      config.vm.provider :vcloud do |cloud, override|
+        override.proxy.enabled = false
+      end
+    end
+    config.vm.provider :vcloud do |cloud, override|
+      override.vm.usable_port_range = 2200..2999
+    end
+  end
+
+  config.vm.define :"tst" do |tst|
+    tst.vm.box = "windows_2012_r2"
+    tst.vm.hostname = "tst"
+
+    tst.vm.communicator = "winrm" 
+#    tst.winrm.password = "OtherPassword"
+    tst.vm.network :private_network, ip: "192.168.33.2", gateway: "192.168.33.1"
+    tst.vm.network :forwarded_port, guest: 22, host: 2222, id: "ssh", auto_correct: true
+    tst.vm.network :forwarded_port, guest: 3389, host: 3389, id: "rdp", auto_correct: true
+
+    tst.vm.provision "shell", path: "scripts/provision.ps1"
+#    tst.vm.synced_folder ".", "/vagrant", type: "rsync", rsync__exclude: ".git/"
+
+    tst.vm.provider :virtualbox do |vb, override|
+      vb.gui = true
+      vb.cpus = 1
+      vb.memory = 768
+      vb.customize ["modifyvm", :id, "--vram", "32"]
+      vb.customize ["modifyvm", :id, "--clipboard", "bidirectional"]
+      vb.customize ["setextradata", "global", "GUI/SuppressMessages", "all" ]
+    end
+    tst.vm.provider :vcloud do |vb, override|
+      #vb.cpus = 4
+      #vb.memory = 4096
+    end
+  end
+
+
+  config.vm.define :"tst2" do |tst|
+    tst.vm.box = "windows_2012_r2"
+    tst.vm.hostname = "tst2"
+
+    tst.vm.communicator = "winrm" 
+    tst.vm.network :private_network, ip: "192.168.33.3", gateway: "192.168.33.1"
+    tst.vm.network :forwarded_port, guest: 22, host: 2222, id: "ssh", auto_correct: true
+    tst.vm.network :forwarded_port, guest: 3389, host: 3389, id: "rdp", auto_correct: true
+
+    tst.vm.provision "shell", path: "scripts/provision.ps1"
+
+    tst.vm.provider :virtualbox do |vb, override|
+      vb.gui = true
+      vb.cpus = 1
+      vb.memory = 768
+      vb.customize ["modifyvm", :id, "--vram", "32"]
+      vb.customize ["modifyvm", :id, "--clipboard", "bidirectional"]
+      vb.customize ["setextradata", "global", "GUI/SuppressMessages", "all" ]
+    end
+    tst.vm.provider :vcloud do |v|
+      # some features of vagrant-vcloud 0.4.0
+      #v.nested_hypervisor = true
+      #v.cpus = 4
+      #v.memory = 4096
+    end
+  end
+
+end

@@ -5,7 +5,7 @@ and Vagrant 1.6.3. The new winrm communicator is used for provisioning.
 ## Prerequisites
 
 * Vagrant 1.6.3 + [PR #3962](https://github.com/frapposelli/vagrant-vcloud/pull/3962), or Vagrant 1.6.4 for `vagrant rdp` on windows hosts
-* vagrant-vcloud 0.3.1 + [PR #61](https://github.com/frapposelli/vagrant-vcloud/pull/61), or vagrant-vcloud 0.4.0
+* vagrant-vcloud 0.4.0
 * a global Vagrantfile with your vCloud connection data
 
 ## Installation

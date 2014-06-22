@@ -1,4 +1,4 @@
-# windows/vappnetwork/windows_2008_r2
+# windows/vappnetwork/windows_2012_r2
 A small sample to bring up two windows machines in vCloud with vagrant-vcloud provider
 and Vagrant 1.6.3. The new winrm communicator is used for provisioning.
 
@@ -14,10 +14,10 @@ and Vagrant 1.6.3. The new winrm communicator is used for provisioning.
 
 ## Installation
 
-Must have an uploaded box `windows_2008_r2` in your vCloud catalog. Append a dummy box with the following command to make vagrant happy.
+Must have an uploaded box `windows_2012_r2` in your vCloud catalog. Append a dummy box with the following command to make vagrant happy.
 
 ```bash
-vagrant box add --name windows_2008_r2 https://github.com/StefanScherer/vcloud-scenarios/raw/master/dummy_box/dummy.box
+vagrant box add --name windows_2012_r2 https://github.com/StefanScherer/vcloud-scenarios/raw/master/dummy_box/dummy.box
 ```
 
 ## Create the boxes
