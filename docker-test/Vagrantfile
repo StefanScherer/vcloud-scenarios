@@ -1,0 +1,43 @@
+nodes = [
+  # Set up our Docker node with our Vagrant Cloud Ubuntu box
+  { :hostname => "docker-test",  :box => "ubuntu1404" },
+]
+ 
+Vagrant.configure('2') do |config|
+  
+  if Vagrant.has_plugin?("vagrant-vcloud")
+    config.vm.provider :vcloud do |vcloud|
+      vcloud.catalog_name = "COM-BUILD-CATALOG"
+      vcloud.vapp_prefix = "docker-test"
+      vcloud.ip_subnet = "172.16.32.1/255.255.255.0"
+      vcloud.ip_dns = ["10.100.20.2", "8.8.8.8"] # this does not work for now, see fix-resolv-conf.sh below
+    end
+  end
+
+  nodes.each do |node|
+    config.vm.define node[:hostname] do |node_config|
+ 
+      # Set up the box and the hostname
+      node_config.vm.box = node[:box]
+      node_config.vm.hostname = node[:hostname]
+
+      # forward the tutum/wordpress docker port 80 through vCloud Edge Gateway
+      node_config.vm.network :forwarded_port, guest: 80, host: 80, id: "http", auto_correct: true
+
+      # Ubuntu 14.04 guest customization does not fill in /etc/resolv.conf - so fix it
+      node_config.vm.provision 'shell', path: "scripts/fix-resolv-conf.sh"
+  
+      # Configure Docker, this will pull Docker binaries automatically
+      node_config.vm.provision 'docker' do |d|
+        # Run a Container, this will pull tutum/wordpress from the Docker
+        # registry and will run the container with the specified args and
+        # command.
+        d.run 'tutum/wordpress', cmd: '/run.sh', args: '-p 80:80'
+      end
+ 
+      # Disable NFS functionalities as they're not supported by our Vagrant
+      # providers
+      node_config.nfs.functional = false
+    end
+  end
+end
