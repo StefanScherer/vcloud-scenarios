@@ -30,6 +30,9 @@ Vagrant.configure("2") do |config|
     tst.vm.network :forwarded_port, guest: 3389, host: 3389, id: "rdp", auto_correct: true
 
     tst.vm.provision "shell", path: "scripts/provision.ps1"
+    tst.vm.provision :serverspec do |spec|
+      spec.pattern = 'test/*_vcloud.rb'
+    end
 #    tst.vm.synced_folder ".", "/vagrant", type: "rsync", rsync__exclude: ".git/"
 
     tst.vm.provider :virtualbox do |vb, override|
