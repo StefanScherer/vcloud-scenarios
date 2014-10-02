@@ -1,4 +1,3 @@
 #!/bin/bash -x
-/vagrant/script/setup.sh
-/vagrant/scripts/receiver.sh &
-/vagrant/scripts/sender.sh
+time /vagrant/scripts/receiver.sh &
+/vagrant/scripts/send-to-server.sh

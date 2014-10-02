@@ -1,2 +1,2 @@
 #!/bin/bash -x
-time cat bigfile-urandom | nc 172.16.32.2 12345
+time cat bigfile-urandom | nc 192.168.33.2 12345

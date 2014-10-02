@@ -12,7 +12,7 @@ First spin up both boxes in your vCloud with
 vagrant up --provider=vcloud
 ```
 
-## Send 100 MByte locally in one box
+## Test 1: Send 100 MByte locally in one box
 
 For this test we log into one box, eg. the server VM.
 
@@ -58,7 +58,7 @@ a2329ed959f1fd4da7ffe63d9bc21067  xxx.data
 vagrant@server:~$
 ```
 
-## Send 100 MByte between two boxes
+## Test 2: Send 100 MByte between two boxes
 
 For this test we start a netcat receiver listening on port 12345
 on the server VM.
@@ -70,6 +70,7 @@ vagrant ssh server -c /vagrant/scripts/receiver.sh
 Open up another shell and send the file from client to server.
 
 ```bash
+vagrant ssh client -c /vagrant/scripts/setup.sh
 vagrant ssh client -c /vagrant/scripts/send-to-server.sh
 ```
 
@@ -82,6 +83,66 @@ $ vagrant ssh client -c /vagrant/scripts/send-to-server.sh
 
 real  0m1.721s
 user  0m0.037s
-sys 0m1.134s
+sys   0m1.134s
 Connection to 10.100.50.4 closed.
+```
+
+## Test 3: Send 100 MByte from client to server and back
+
+For this test we start a simple spooler process that receives data
+from port 12345 and writes it on disk. Then it sends the data back over
+the network to the client.
+
+The client measures the time until the data has been received again.
+
+```bash
+vagrant ssh server -c /vagrant/scripts/spooler.sh
+```
+
+Open another shell and start the test job
+
+```bash
+vagrant ssh client
+/vagrant/scripts/setup.sh
+/vagrant/scripts/sendrec.sh
+```
+
+Example output:
+
+```
+$ vagrant ssh client
+Welcome to Ubuntu 12.04.5 LTS (GNU/Linux 3.13.0-36-generic x86_64)
+
+ * Documentation:  https://help.ubuntu.com/
+New release '14.04.1 LTS' available.
+Run 'do-release-upgrade' to upgrade to it.
+
+Last login: Thu Oct  2 23:38:33 2014 from 10.0.2.2
+vagrant@client:~$ /vagrant/scripts/setup.sh
++ dd if=/dev/urandom of=bigfile-urandom bs=1024 count=102400
+102400+0 records in
+102400+0 records out
+104857600 bytes (105 MB) copied, 6.00124 s, 17.5 MB/s
+
+real  0m6.014s
+user  0m0.000s
+sys   0m5.961s
++ md5sum bigfile-urandom
+3448a4c9ba5d5ce4ab05f83b59024db8  bigfile-urandom
+vagrant@client:~$ /vagrant/scripts/sendrec.sh
++ /vagrant/scripts/receiver.sh
++ /vagrant/scripts/send-to-server.sh
++ nc -d -l 12345
++ nc 192.168.33.2 12345
++ cat bigfile-urandom
+
+real  0m1.963s
+user  0m0.022s
+sys   0m1.149s
+vagrant@client:~$ + md5sum xxx.data
+3448a4c9ba5d5ce4ab05f83b59024db8  xxx.data
+
+real  0m4.981s
+user  0m0.192s
+sys   0m1.920s
 ```
