@@ -1,0 +1,28 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+
+  if Vagrant.has_plugin?("vagrant-vcloud")
+    config.vm.provider :vcloud do |vcloud|
+      vcloud.vapp_prefix = "100mb-test"
+      vcloud.ip_subnet = "172.16.32.0/255.255.255.0"
+    end
+    config.vm.provider :vcloud do |cloud, override|
+      override.vm.usable_port_range = 2200..2999
+    end
+  end
+
+  config.vm.define "server" do |config|
+    config.vm.box = "ubuntu1204"
+    config.vm.hostname = "server"
+    config.vm.network :private_network, ip: "172.16.32.2" # VMware Fusion/VirtualBox
+  end
+
+  config.vm.define "client" do |config|
+    config.vm.box = "ubuntu1204"
+    config.vm.hostname = "client"
+    config.vm.network :private_network, ip: "172.16.32.3" # VMware Fusion/VirtualBox
+  end
+
+end
