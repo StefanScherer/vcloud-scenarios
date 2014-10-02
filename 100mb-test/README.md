@@ -28,36 +28,37 @@ vagrant ssh server
 Example output:
 ```
 $ vagrant ssh server
-Welcome to Ubuntu 14.04.1 LTS (GNU/Linux 3.13.0-32-generic x86_64)
+==> server: External IP for server: 10.100.50.4
+Welcome to Ubuntu 12.04.5 LTS (GNU/Linux 3.13.0-36-generic x86_64)
 
  * Documentation:  https://help.ubuntu.com/
-Last login: Sat Aug 16 21:06:35 2014 from 192.168.254.1
+New release '14.04.1 LTS' available.
+Run 'do-release-upgrade' to upgrade to it.
+
+Last login: Wed Oct  1 08:26:03 2014 from 192.168.186.1
 vagrant@server:~$ /vagrant/scripts/setup.sh
 + dd if=/dev/urandom of=bigfile-urandom bs=1024 count=102400
 102400+0 records in
 102400+0 records out
-104857600 bytes (105 MB) copied, 9.19238 s, 11.4 MB/s
+104857600 bytes (105 MB) copied, 22.6425 s, 4.6 MB/s
 
-real	0m9.195s
-user	0m0.070s
-sys	0m9.086s
+real  0m22.701s
+user  0m0.050s
+sys   0m22.288s
 + md5sum bigfile-urandom
-a2329ed959f1fd4da7ffe63d9bc21067  bigfile-urandom
+8516c82fb881e2aee0b60dd526385369  bigfile-urandom
 vagrant@server:~$ /vagrant/scripts/receiver.sh &
-[1] 2054
+[1] 1235
 vagrant@server:~$ + nc -d -l 12345
 /vagrant/scripts/send-to-localhost.sh
-+ cat bigfile-urandom
 + nc 127.0.0.1 12345
++ cat bigfile-urandom
 
-real	0m0.937s
-user	0m0.041s
-sys	0m0.140s
+real  0m0.857s
+user  0m0.013s
+sys   0m0.182s
 vagrant@server:~$ + md5sum xxx.data
-a2329ed959f1fd4da7ffe63d9bc21067  xxx.data
-
-[1]+  Done                    /vagrant/scripts/receiver.sh
-vagrant@server:~$
+8516c82fb881e2aee0b60dd526385369  xxx.data
 ```
 
 ### Test 2: Send 100 MByte between two boxes
@@ -79,13 +80,26 @@ vagrant ssh client -c /vagrant/scripts/send-to-server.sh
 Example output:
 
 ```
+$ vagrant ssh client -c /vagrant/scripts/setup.sh
++ dd if=/dev/urandom of=bigfile-urandom bs=1024 count=102400
+102400+0 records in
+102400+0 records out
+104857600 bytes (105 MB) copied, 21.2073 s, 4.9 MB/s
+
+real  0m21.270s
+user  0m0.041s
+sys   0m20.711s
++ md5sum bigfile-urandom
+b3c70eca4c6e4eb97fc6ad5a249eeeb7  bigfile-urandom
+Connection to 10.100.50.4 closed.
+vagrant at vpn-mac in ~/code/vcloud-scenarios/100mb-test on master
 $ vagrant ssh client -c /vagrant/scripts/send-to-server.sh
-+ nc 172.16.32.2 12345
++ nc 192.168.33.2 12345
 + cat bigfile-urandom
 
-real  0m1.721s
-user  0m0.037s
-sys   0m1.134s
+real  0m1.073s
+user  0m0.032s
+sys   0m0.346s
 Connection to 10.100.50.4 closed.
 ```
 
@@ -113,40 +127,41 @@ Example output:
 
 ```
 $ vagrant ssh client
+==> client: External IP for client: 10.100.50.4
 Welcome to Ubuntu 12.04.5 LTS (GNU/Linux 3.13.0-36-generic x86_64)
 
  * Documentation:  https://help.ubuntu.com/
 New release '14.04.1 LTS' available.
 Run 'do-release-upgrade' to upgrade to it.
 
-Last login: Thu Oct  2 23:38:33 2014 from 10.0.2.2
+Last login: Fri Oct  3 00:13:15 2014 from 192.168.99.118
 vagrant@client:~$ /vagrant/scripts/setup.sh
 + dd if=/dev/urandom of=bigfile-urandom bs=1024 count=102400
 102400+0 records in
 102400+0 records out
-104857600 bytes (105 MB) copied, 6.00124 s, 17.5 MB/s
+104857600 bytes (105 MB) copied, 21.4557 s, 4.9 MB/s
 
-real  0m6.014s
-user  0m0.000s
-sys   0m5.961s
+real	0m21.468s
+user	0m0.034s
+sys	0m20.524s
 + md5sum bigfile-urandom
-3448a4c9ba5d5ce4ab05f83b59024db8  bigfile-urandom
+14a8c72842b01fde86bfd053bd95e088  bigfile-urandom
 vagrant@client:~$ /vagrant/scripts/sendrec.sh
-+ /vagrant/scripts/receiver.sh
 + /vagrant/scripts/send-to-server.sh
++ /vagrant/scripts/receiver.sh
 + nc -d -l 12345
 + nc 192.168.33.2 12345
 + cat bigfile-urandom
 
-real  0m1.963s
-user  0m0.022s
-sys   0m1.149s
+real  0m1.242s
+user  0m0.023s
+sys   0m0.338s
 vagrant@client:~$ + md5sum xxx.data
-3448a4c9ba5d5ce4ab05f83b59024db8  xxx.data
+14a8c72842b01fde86bfd053bd95e088  xxx.data
 
-real  0m4.981s
-user  0m0.192s
-sys   0m1.920s
+real  0m2.450s
+user  0m0.236s
+sys   0m0.652s
 ```
 
 ## VirtualBox
