@@ -182,8 +182,55 @@ In this test you can send a 100 MByte file from client with `rlpr` to a CUPS on 
 This will send the data back to the client on port 12345.
 
 ```bash
-vagrant ssh client /vagrant/scripts/sendrec-lpr.sh
+vagrant ssh client
+/vagrant/scripts/setup.sh
+/vagrant/scripts/sendrec-lpr.sh
 ```
+
+Example output:
+```
+$ vagrant ssh client
+==> client: External IP for client: 10.100.50.4
+Welcome to Ubuntu 12.04.5 LTS (GNU/Linux 3.13.0-36-generic x86_64)
+
+ * Documentation:  https://help.ubuntu.com/
+New release '14.04.1 LTS' available.
+Run 'do-release-upgrade' to upgrade to it.
+
+Last login: Fri Oct  3 09:55:37 2014 from 192.168.99.118
+vagrant@client:~$ /vagrant/scripts/setup.sh
++ dd if=/dev/urandom of=bigfile-urandom bs=1024 count=102400
+102400+0 records in
+102400+0 records out
+104857600 bytes (105 MB) copied, 22.2425 s, 4.7 MB/s
+
+real  0m22.257s
+user  0m0.056s
+sys   0m21.825s
++ md5sum bigfile-urandom
+4cc1b3ef7189c90e8db4d196c23b5177  bigfile-urandom
+vagrant@client:~$ /vagrant/scripts/sendrec-lpr.sh
++ md5sum bigfile-urandom
+4cc1b3ef7189c90e8db4d196c23b5177  bigfile-urandom
++ /vagrant/scripts/send-to-lpd-server.sh
++ rlpr -N -H192.168.33.2 -Ppingpong -Jbigfile bigfile-urandom
++ /vagrant/scripts/receiver.sh
++ nc -d -l 12345
+rlpr: info: 1 file spooled to pingpong@192.168.33.2 (proxy (none))
+
+real  0m1.975s
+user  0m0.060s
+sys   0m0.378s
+vagrant@client:~$ + md5sum xxx.data
+b8893c4becfd9b37f5ef7022d75face2  xxx.data
+
+real  0m4.925s
+user  0m0.447s
+sys   0m0.903s
+```
+
+**But watch out. The MD5 sums differ.** CUPS prepends a `#PDF-BANNER` in this setup to the target data stream.
+I leave this as and exercise to others to fix this. Send me a PR ;-)
 
 ## VirtualBox
 
@@ -301,7 +348,7 @@ user  0m0.219s
 sys   0m1.584s
 ```
 
-### Test 4
+### Test 5
 client rlpr -> server cups -> client port 12345
 
 ```
@@ -341,3 +388,5 @@ real  0m3.844s
 user  0m0.155s
 sys   0m1.239s
 ```
+As mentioned above. **The MD5 sums differ.** CUPS prepends a `#PDF-BANNER` in this setup to the target data stream.
+I leave this as and exercise to others to fix this. Send me a PR ;-)
