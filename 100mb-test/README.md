@@ -143,7 +143,7 @@ vagrant@client:~$ /vagrant/scripts/setup.sh
 
 real	0m21.468s
 user	0m0.034s
-sys	0m20.524s
+sys   0m20.524s
 + md5sum bigfile-urandom
 14a8c72842b01fde86bfd053bd95e088  bigfile-urandom
 vagrant@client:~$ /vagrant/scripts/sendrec.sh
@@ -162,6 +162,27 @@ vagrant@client:~$ + md5sum xxx.data
 real  0m2.450s
 user  0m0.236s
 sys   0m0.652s
+```
+
+### Test 4: Send 100 MB with LPR from client to server
+
+In this test you can send a 100 MByte file from client with `rlpr` to a CUPS on the server machine.
+This will send the data back to the client on port 12345.
+
+```bash
+vagrant ssh client
+/vagrant/scripts/setup.sh
+/vagrant/scripts/receiver.sh &
+/vagrant/scripts/send-to-lpd-server.sh
+```
+
+### Test 5: Send 100 MB with LPR from client to server and back
+
+In this test you can send a 100 MByte file from client with `rlpr` to a CUPS on the server machine.
+This will send the data back to the client on port 12345.
+
+```bash
+vagrant ssh client /vagrant/scripts/sendrec-lpr.sh
 ```
 
 ## VirtualBox
@@ -278,4 +299,45 @@ a2f6c5ee6069ec1bc32d1c35dc2a1c4e  xxx.data
 real  0m5.107s
 user  0m0.219s
 sys   0m1.584s
+```
+
+### Test 4
+client rlpr -> server cups -> client port 12345
+
+```
+$ vagrant ssh client
+Welcome to Ubuntu 12.04.5 LTS (GNU/Linux 3.13.0-36-generic x86_64)
+
+ * Documentation:  https://help.ubuntu.com/
+New release '14.04.1 LTS' available.
+Run 'do-release-upgrade' to upgrade to it.
+
+Last login: Fri Oct  3 09:07:51 2014 from 10.0.2.2
+vagrant@client:~$ /vagrant/scripts/setup.sh
++ dd if=/dev/urandom of=bigfile-urandom bs=1024 count=102400
+102400+0 records in
+102400+0 records out
+104857600 bytes (105 MB) copied, 5.88518 s, 17.8 MB/s
+
+real  0m5.899s
+user  0m0.020s
+sys   0m5.824s
++ md5sum bigfile-urandom
+d6cca2fde728a80d793bbc8a6508d0f1  bigfile-urandom
+vagrant@client:~$ /vagrant/scripts/sendrec-lpr.sh
++ /vagrant/scripts/send-to-lpd-server.sh
++ /vagrant/scripts/receiver.sh
++ rlpr -N -H192.168.33.2 -Ppingpong -Jbigfile bigfile-urandom
++ nc -d -l 12345
+rlpr: info: 1 file spooled to pingpong@192.168.33.2 (proxy (none))
+
+real  0m1.820s
+user  0m0.075s
+sys   0m0.645s
+vagrant@client:~$ + md5sum xxx.data
+5c436696e21652051fc8bd07743d9ad3  xxx.data
+
+real  0m3.844s
+user  0m0.155s
+sys   0m1.239s
 ```
