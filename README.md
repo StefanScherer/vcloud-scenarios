@@ -1,7 +1,8 @@
 # Vagrant vCloud scenarios
 Each sub directory contains a small multi machine scenario to use with the vagrant-vcloud plugin.
 
-At the moment you need already uploaded baseboxes in your vCloud catalog with the following names
+At the moment you need already uploaded baseboxes in your vCloud catalog with the following names. You
+also can use a global vCloud catalog with such boxes.
 
 * ubuntu1204
 * windows_2008_r2
