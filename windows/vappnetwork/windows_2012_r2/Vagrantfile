@@ -1,5 +1,6 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
+require "awesome_print"
 
 Vagrant.configure("2") do |config|
 
@@ -23,7 +24,7 @@ Vagrant.configure("2") do |config|
     tst.vm.box = "windows_2012_r2"
     tst.vm.hostname = "tst"
 
-    tst.vm.communicator = "winrm" 
+    tst.vm.communicator = "winrm"
 #    tst.winrm.password = "OtherPassword"
     tst.vm.network :private_network, ip: "192.168.33.2", gateway: "192.168.33.1"
     tst.vm.network :forwarded_port, guest: 22, host: 2222, id: "ssh", auto_correct: true
@@ -44,6 +45,11 @@ Vagrant.configure("2") do |config|
       vb.customize ["setextradata", "global", "GUI/SuppressMessages", "all" ]
     end
     tst.vm.provider :vcloud do |vb, override|
+      vb.enable_guest_customization = true
+#      vb.guest_customization_admin_password_enabled = true
+#      vb.guest_customization_admin_password_reset = true
+      vb.guest_customization_change_sid = true
+      vb.guest_customization_admin_password = "vagrant"
       #vb.cpus = 4
       #vb.memory = 4096
     end
@@ -54,7 +60,7 @@ Vagrant.configure("2") do |config|
     tst.vm.box = "windows_2012_r2"
     tst.vm.hostname = "tst2"
 
-    tst.vm.communicator = "winrm" 
+    tst.vm.communicator = "winrm"
     tst.vm.network :private_network, ip: "192.168.33.3", gateway: "192.168.33.1"
     tst.vm.network :forwarded_port, guest: 22, host: 2222, id: "ssh", auto_correct: true
     tst.vm.network :forwarded_port, guest: 3389, host: 3389, id: "rdp", auto_correct: true
